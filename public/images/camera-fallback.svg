@@ -1,0 +1,9 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="32" fill="#171918"/>
+  <rect x="72" y="72" width="1056" height="576" rx="24" fill="#1E211F" stroke="#343834"/>
+  <circle cx="600" cy="320" r="128" fill="#262A28"/>
+  <path d="M600 226C530.728 226 474 282.728 474 352C474 421.272 530.728 478 600 478C669.272 478 726 421.272 726 352C726 282.728 669.272 226 600 226ZM600 274C643.855 274 678 308.145 678 352C678 395.855 643.855 430 600 430C556.145 430 522 395.855 522 352C522 308.145 556.145 274 600 274Z" fill="#C96442"/>
+  <path d="M426 520H774" stroke="#B7B2A8" stroke-width="24" stroke-linecap="round"/>
+  <path d="M474 178L726 178" stroke="#F5F4ED" stroke-opacity="0.4" stroke-width="20" stroke-linecap="round"/>
+  <text x="600" y="582" text-anchor="middle" fill="#F5F4ED" font-size="38" font-family="Arial, Helvetica, sans-serif">Preview unavailable</text>
+</svg>

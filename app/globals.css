@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --background: #101111;
+  --surface: #171918;
+  --surface-2: #1e211f;
+  --surface-3: #262a28;
+  --card: rgba(250, 249, 245, 0.03);
+  --card-strong: rgba(250, 249, 245, 0.06);
+  --border: rgba(232, 230, 220, 0.12);
+  --border-strong: rgba(232, 230, 220, 0.2);
+  --text: #f5f4ed;
+  --muted: #b7b2a8;
+  --soft: #8a867d;
+  --accent: #c96442;
+  --accent-soft: rgba(201, 100, 66, 0.18);
+  --success: #6ac58b;
+  --warning: #d8b164;
+  --danger: #d96a6a;
+  --ring: rgba(201, 100, 66, 0.35);
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  --font-serif: Georgia, "Times New Roman", Times, serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: radial-gradient(circle at top, rgba(201, 100, 66, 0.12), transparent 30%), var(--background);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(201, 100, 66, 0.08), transparent 24%),
+    linear-gradient(180deg, #111313 0%, #0f1111 100%);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.container-shell {
+  width: min(1280px, calc(100% - 1.5rem));
+  margin: 0 auto;
+}
+
+.glass-panel {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(250, 249, 245, 0.05), rgba(250, 249, 245, 0.03));
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.leaflet-container {
+  background: #1b1d1c;
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-attribution {
+  background: rgba(15, 17, 17, 0.82) !important;
+  color: var(--muted) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--text) !important;
+}
+
+.camera-marker {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(201, 100, 66, 0.24);
+}
+
+.map-popup {
+  color: #111313;
+}
