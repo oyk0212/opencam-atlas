@@ -36,10 +36,11 @@ export async function fetchHongKongCameras(): Promise<Camera[]> {
 
   return images.map((image) => {
     const label = `${image.region} ${image.district} ${image.description}`;
+    const name = sanitizeCameraName(image.description);
 
     return {
       id: `hk-${String(image.key).toLowerCase()}`,
-      name: sanitizeCameraName(image.description),
+      name,
       country: "Hong Kong",
       city: image.district,
       category: inferCameraCategory(label),
@@ -50,11 +51,11 @@ export async function fetchHongKongCameras(): Promise<Camera[]> {
       officialSourceUrl: HONG_KONG_SOURCE_URL,
       lastUpdated: fetchedAt,
       refreshSeconds: 120,
-      tags: [image.region, image.district, "official camera", "hong kong"],
+      tags: [image.region, image.district, inferCameraCategory(label), "hong kong"],
       status: "online",
       licenseNote:
         "Official DATA.GOV.HK transport dataset. Review Hong Kong Transport Department reuse terms before redistribution.",
-      description: sanitizeCameraName(image.description),
+      description: `Official Hong Kong traffic snapshot for ${name}.`,
     } satisfies Camera;
   });
 }

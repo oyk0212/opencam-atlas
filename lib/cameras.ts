@@ -66,18 +66,64 @@ export function getFilterOptions(cameras: Camera[]): CameraFilterOptions {
 }
 
 export function getTrendingCameras(cameras: Camera[]) {
+  const now = Date.now();
+
   return [...cameras]
     .sort((left, right) => {
-      const freshness =
-        new Date(right.lastUpdated).getTime() - new Date(left.lastUpdated).getTime();
+      const score = (camera: Camera) => {
+        const ageMinutes = Math.max(
+          0,
+          (now - new Date(camera.lastUpdated).getTime()) / 60000,
+        );
+        const freshnessScore = Math.max(0, 180 - ageMinutes);
+        const statusScore =
+          camera.status === "online" ? 120 : camera.status === "stale" ? 45 : 0;
+        const streamScore = camera.streamUrl ? 25 : 0;
+        const scenicScore = camera.tags.some((tag) =>
+          ["bridge", "harbor", "beach", "mountain", "downtown", "night view"].includes(tag),
+        )
+          ? 18
+          : 0;
+        const providerScore = camera.provider.toLowerCase().includes("mock") ? -20 : 12;
 
-      if (freshness !== 0) {
-        return freshness;
-      }
+        return freshnessScore + statusScore + streamScore + scenicScore + providerScore;
+      };
 
-      return right.tags.length - left.tags.length;
+      return score(right) - score(left);
     })
     .slice(0, 4);
+}
+
+const TAG_STOP_WORDS = new Set([
+  "official api",
+  "official camera",
+  "traffic",
+  "road",
+  "weathercam",
+  "hong kong",
+  "finland",
+  "singapore",
+  "scenic",
+  "global webcam",
+]);
+
+export function getPopularTags(cameras: Camera[]) {
+  const counts = new Map<string, number>();
+
+  cameras.forEach((camera) => {
+    new Set(camera.tags).forEach((tag) => {
+      const normalized = tag.toLowerCase();
+      if (TAG_STOP_WORDS.has(normalized) || normalized.startsWith("camera-")) {
+        return;
+      }
+
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    });
+  });
+
+  return Array.from(counts.entries())
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .slice(0, 8);
 }
 
 export function getCameraStats(cameras: Camera[]) {

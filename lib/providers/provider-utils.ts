@@ -94,3 +94,11 @@ export function inferStatusFromAge(lastUpdated: string, staleAfterSeconds: numbe
 export function sanitizeCameraName(value: string) {
   return value.replace(/\s*\[[A-Z0-9]+\]\s*$/i, "").replaceAll("_", " ").trim();
 }
+
+export function titleCase(value: string) {
+  return value
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}

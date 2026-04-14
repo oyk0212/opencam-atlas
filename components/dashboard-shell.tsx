@@ -14,6 +14,7 @@ type ViewMode = "grid" | "map";
 interface DashboardShellProps {
   cameras: Camera[];
   filterOptions: CameraFilterOptions;
+  popularTags: Array<[string, number]>;
   trending: Camera[];
   stats: {
     total: number;
@@ -57,6 +58,7 @@ function useFavorites() {
 export function DashboardShell({
   cameras,
   filterOptions,
+  popularTags,
   trending,
   stats,
   providers,
@@ -133,20 +135,6 @@ export function DashboardShell({
       );
     });
   }, [cameras, category, city, country, favorites, favoritesOnly, media, provider, search]);
-
-  const popularTags = useMemo(() => {
-    const counts = new Map<string, number>();
-
-    cameras.forEach((camera) => {
-      camera.tags.forEach((tag) => {
-        counts.set(tag, (counts.get(tag) ?? 0) + 1);
-      });
-    });
-
-    return Array.from(counts.entries())
-      .sort((left, right) => right[1] - left[1])
-      .slice(0, 8);
-  }, [cameras]);
 
   const clearFilters = () => {
     setSearch("");

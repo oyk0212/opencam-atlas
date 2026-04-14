@@ -1,5 +1,11 @@
 import { Camera, CameraProvider } from "@/lib/providers/types";
-import { fetchJson, inferCameraCategory, inferStatusFromAge, sanitizeCameraName } from "@/lib/providers/provider-utils";
+import {
+  fetchJson,
+  inferCameraCategory,
+  inferStatusFromAge,
+  sanitizeCameraName,
+  titleCase,
+} from "@/lib/providers/provider-utils";
 
 interface FinlandStationFeature {
   id: string;
@@ -36,6 +42,26 @@ interface FinlandDataResponse {
 }
 
 const FINLAND_SOURCE_URL = "https://www.digitraffic.fi/en/road-traffic/";
+
+function parseFinlandStationName(rawName: string) {
+  const normalized = sanitizeCameraName(rawName);
+  const parts = normalized.split(" ").filter(Boolean);
+  const routeToken = parts[0] ?? "Road";
+  const municipalityToken = parts[1] ?? parts[0] ?? "Finland";
+  const placeToken = parts.slice(2).join(" ");
+
+  const route = routeToken.toUpperCase().replace(/^([A-Z]{1,3})(\d+)/i, "$1 $2");
+  const city = titleCase(municipalityToken);
+  const place = placeToken ? titleCase(placeToken) : city;
+
+  return {
+    city,
+    route,
+    name: `${route} ${place}`.trim(),
+    tags: [route.replace(/\s+/g, "").toLowerCase(), city.toLowerCase(), "weathercam", "finland"],
+    description: `Official Digitraffic weather camera on ${route} near ${place}.`,
+  };
+}
 
 export async function fetchFinlandCameras(): Promise<Camera[]> {
   const [stations, stationData] = await Promise.all([
@@ -74,18 +100,16 @@ export async function fetchFinlandCameras(): Promise<Camera[]> {
       }
 
       const presetData = liveData?.presets.find((preset) => preset.id === preferredPreset.id);
-      const rawName = sanitizeCameraName(feature.properties.name);
-      const nameParts = rawName.split(" ").filter(Boolean);
-      const city = nameParts[1] ?? nameParts[0] ?? "Finland";
+      const parsedName = parseFinlandStationName(feature.properties.name);
       const lastUpdated = presetData?.measuredTime ?? feature.properties.dataUpdatedTime;
       const previewImageUrl = `https://weathercam.digitraffic.fi/${preferredPreset.id}.jpg`;
 
       return {
         id: `fi-${feature.id.toLowerCase()}`,
-        name: rawName,
+        name: parsedName.name,
         country: "Finland",
-        city,
-        category: inferCameraCategory(rawName),
+        city: parsedName.city,
+        category: inferCameraCategory(parsedName.name),
         provider: "Finnish Transport Infrastructure Agency / Digitraffic",
         latitude: feature.geometry.coordinates[1],
         longitude: feature.geometry.coordinates[0],
@@ -93,14 +117,14 @@ export async function fetchFinlandCameras(): Promise<Camera[]> {
         officialSourceUrl: FINLAND_SOURCE_URL,
         lastUpdated,
         refreshSeconds: 300,
-        tags: ["weathercam", "road", city.toLowerCase(), "finland"],
+        tags: [...parsedName.tags, "road"],
         status:
           feature.properties.collectionStatus === "GATHERING"
             ? inferStatusFromAge(lastUpdated, 10 * 60)
             : "offline",
         licenseNote:
           "Official Digitraffic weathercam feed. Use a Digitraffic-User header and review reuse requirements before production.",
-        description: `Official Digitraffic weather camera at ${rawName}.`,
+        description: parsedName.description,
       } satisfies Camera;
     })
     .filter((camera): camera is Camera => camera !== null);
