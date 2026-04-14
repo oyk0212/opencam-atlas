@@ -19,10 +19,18 @@ function dedupeCameras(cameras: Camera[]) {
 const getCachedCameras = unstable_cache(
   async () => {
     const providers = getProviderRegistry();
+    const activeProviders = providers.filter(
+      (provider) => provider.meta.id === "mock" || provider.meta.enabled,
+    );
     const cameraSets = await Promise.all(
-      providers
-        .filter((provider) => provider.meta.status === "active" || provider.meta.enabled)
-        .map((provider) => provider.getCameras()),
+      activeProviders.map(async (provider) => {
+        try {
+          return await provider.getCameras();
+        } catch (error) {
+          console.error(`Provider ${provider.meta.id} failed`, error);
+          return [];
+        }
+      }),
     );
 
     const merged = dedupeCameras(cameraSets.flat());

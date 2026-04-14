@@ -51,6 +51,33 @@ The app is structured so live adapters can be added without changing the dashboa
 - `lib/cameras.ts` merges and caches provider output
 - Each provider adapter returns normalized `Camera[]`
 
+### Implemented provider adapters
+
+- `mock`: seeded development data
+- `hong-kong`: official DATA.GOV.HK traffic snapshot images
+- `finland`: official Digitraffic weather cameras
+- `singapore`: official data.gov.sg traffic images
+- `ohgo`: official Ohio OHGO cameras, requires API key
+- `windy`: official Windy Webcams API, requires API key
+
+To turn on live providers:
+
+```bash
+ENABLE_REAL_PROVIDERS=true
+HONG_KONG_PROVIDER_ENABLED=true
+FINLAND_PROVIDER_ENABLED=true
+SINGAPORE_PROVIDER_ENABLED=true
+```
+
+Optional keyed providers:
+
+```bash
+OHGO_PROVIDER_ENABLED=true
+OHGO_API_KEY=your-ohgo-key
+WINDY_PROVIDER_ENABLED=true
+WINDY_API_KEY=your-windy-key
+```
+
 ## API routes
 
 - `GET /api/cameras`
@@ -94,8 +121,10 @@ Current provider files:
 - `lib/providers/hongKongProvider.ts`
 - `lib/providers/finlandProvider.ts`
 - `lib/providers/singaporeProvider.ts`
+- `lib/providers/ohgoProvider.ts`
+- `lib/providers/windyProvider.ts`
 
-Only the mock provider is fully implemented in v1. The live providers are typed stubs with TODO comments where official API integration and provider-specific field mapping belong.
+The first three live public providers are implemented. OHGO and Windy are also implemented, but are disabled until their API keys are configured.
 
 ### UI composition
 
@@ -133,14 +162,16 @@ Only the mock provider is fully implemented in v1. The live providers are typed 
 - URL-synced filters
 - Local favorites via `localStorage`
 - Auto-refresh toggle on detail pages
+- Official Hong Kong, Finland, and Singapore provider integrations
+- Key-gated Windy and OHGO adapters
 
 ## Remaining work for live providers
 
-1. Confirm official public endpoints and licensing per provider
-2. Map each provider payload into the normalized `Camera` interface
-3. Add provider-specific retry, timeout, and observability logic
-4. Decide on production tile hosting and caching strategy
-5. Add tests for provider transformations and route contracts
+1. Add city and road-name enrichment for providers whose official API exposes only coordinates or camera IDs
+2. Add provider-specific retry, timeout, observability, and alerting logic
+3. Decide on production tile hosting and caching strategy
+4. Add tests for provider transformations and route contracts
+5. Add moderation and provenance rules before enabling third-party scenic-webcam catalogs
 
 ## Notes on compliance
 

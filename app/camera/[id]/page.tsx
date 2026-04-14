@@ -8,6 +8,10 @@ import { getAllCameras, getCameraById } from "@/lib/cameras";
 export const revalidate = 60;
 
 export async function generateStaticParams() {
+  if (process.env.ENABLE_REAL_PROVIDERS === "true") {
+    return [];
+  }
+
   const cameras = await getAllCameras();
   return cameras.map((camera) => ({ id: camera.id }));
 }
